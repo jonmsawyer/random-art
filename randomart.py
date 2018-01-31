@@ -1,3 +1,4 @@
+import sys
 import random, math
 from PIL import Image
 
@@ -77,19 +78,39 @@ def plotColor(redExp, greenExp, blueExp, pixelsPerUnit = 150):
     bluePlane  = plotIntensity(blueExp, pixelsPerUnit)
     return Image.merge("RGB", (redPlane, greenPlane, bluePlane))
 
-def makeImage(numPics = 20):
-   with open("eqns.txt", 'w') as eqnsFile:
-      for i in range(numPics):
-         redExp = buildExpr()
-         greenExp = buildExpr()
-         blueExp = buildExpr()
+def makeImage(numPics=20, random_sizes=False, pixelsPerUnit=None):
+    if pixelsPerUnit is None:
+        pixelsPerUnit = 150
+    pixels_list = []
+    for i in range(200, 600, 20):
+      pixels_list.append(i)
+    print('Generating {} psychedelic images...'.format(num_pics))
+    with open("eqns.txt", 'w') as eqnsFile:
+        for i in range(numPics):
+            if random_sizes is True:
+              pixelsPerUnit = random.choice(pixels_list)
 
-         eqnsFile.write("img" + str(i) + ":\n")
-         eqnsFile.write("red = " + str(redExp) + "\n")
-         eqnsFile.write("green = " + str(greenExp) + "\n")
-         eqnsFile.write("blue = " + str(blueExp) + "\n\n")
+            print('{i}. Generating a {w}x{w} sized image (n={n})... ' \
+                  .format(w=pixelsPerUnit*2+1, n=pixelsPerUnit, i=i+1),
+                  end='', flush=True)
 
-         image = plotColor(redExp, greenExp, blueExp)
-         image.save("img" + str(i) + ".png", "PNG")
+            redExp = buildExpr()
+            greenExp = buildExpr()
+            blueExp = buildExpr()
 
-#makeImage(50)
+            eqnsFile.write("img" + str(i) + ":\n")
+            eqnsFile.write("red = " + str(redExp) + "\n")
+            eqnsFile.write("green = " + str(greenExp) + "\n")
+            eqnsFile.write("blue = " + str(blueExp) + "\n\n")
+
+            image = plotColor(redExp, greenExp, blueExp, pixelsPerUnit=pixelsPerUnit)
+            image.save("img" + str(i) + ".png", "PNG")
+
+            print('done!')
+
+if __name__ == '__main__':
+    if len(sys.argv) >= 2:
+      num_pics = int(sys.argv[1])
+    else:
+      num_pics = 50
+makeImage(num_pics, True)
